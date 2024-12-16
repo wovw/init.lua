@@ -49,7 +49,7 @@ return {
 			)
 
 			local nvim_lsp = require("lspconfig")
-			-- Configure lua_ls directly with Nix binary
+			-- manual setup to work with NixOS
 			nvim_lsp.lua_ls.setup({
 				cmd = { "lua-language-server" },
 				capabilities = capabilities,
@@ -61,6 +61,9 @@ return {
 						},
 					},
 				},
+			})
+			nvim_lsp.clangd.setup({
+				capabilities = capabilities,
 			})
 
 			require("fidget").setup({})
@@ -74,7 +77,6 @@ return {
 					"golines",
 					"codelldb",
 					"delve",
-					"clang-format",
 				},
 			})
 			require("mason-lspconfig").setup({
@@ -87,18 +89,16 @@ return {
 					"tailwindcss",
 					"prismals",
 					"marksman",
-					"clangd",
 				},
 				automatic_installation = true,
 				handlers = {
 					function(server_name)
-						require("lspconfig")[server_name].setup({
+						nvim_lsp[server_name].setup({
 							capabilities = capabilities,
 						})
 					end,
 					zls = function()
-						local lspconfig = require("lspconfig")
-						lspconfig.zls.setup({
+						nvim_lsp.zls.setup({
 							capabilities = capabilities,
 							settings = {
 								zls = {
@@ -111,8 +111,8 @@ return {
 						vim.g.zig_fmt_parse_errors = 0
 						vim.g.zig_fmt_autosave = 0
 					end,
-					["nil_ls"] = function()
-						require("lspconfig").nil_ls.setup({
+					nil_ls = function()
+						nvim_lsp.nil_ls.setup({
 							capabilities = capabilities,
 							settings = {
 								["nil"] = {
@@ -123,9 +123,8 @@ return {
 							},
 						})
 					end,
-					["ts_ls"] = function()
-						local lspconfig = require("lspconfig")
-						lspconfig.ts_ls.setup({
+					ts_ls = function()
+						nvim_lsp.ts_ls.setup({
 							capabilities = capabilities,
 							handlers = {
 								["textDocument/publishDiagnostics"] = function(
@@ -166,8 +165,7 @@ return {
 						})
 					end,
 					gopls = function()
-						local lspconfig = require("lspconfig")
-						lspconfig.gopls.setup({
+						nvim_lsp.gopls.setup({
 							capabilities = capabilities,
 							settings = {
 								gopls = {
