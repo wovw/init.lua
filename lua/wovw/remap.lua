@@ -21,7 +21,7 @@ vim.keymap.set('n', '$', "g$")
 vim.keymap.set('n', '0', "g0")
 
 -- greatest remap ever
-vim.keymap.set("x", "<leader>p", [["_dP]])
+vim.keymap.set("x", "<leader>pp", [["_dP]])
 
 -- next greatest remap ever : asbjornHaland
 vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])

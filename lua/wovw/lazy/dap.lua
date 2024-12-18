@@ -8,8 +8,8 @@ return {
         config = function()
             local dap_go = require("dap-go")
             dap_go.setup()
-            vim.keymap.set("n", "<leader>dgt", function() dap_go.debug_test() end, { desc = "Debug go test" })
-            vim.keymap.set("n", "<leader>dgl", function() dap_go.debug_last() end, { desc = "Debug last go test" })
+            vim.keymap.set("n", "<leader>bgt", function() dap_go.debug_test() end, { desc = "Debug go test" })
+            vim.keymap.set("n", "<leader>bgl", function() dap_go.debug_last() end, { desc = "Debug last go test" })
         end
     },
     {
@@ -21,7 +21,7 @@ return {
         config = function()
             local dap_python = require("dap-python")
             dap_python.setup("uv")
-            vim.keymap.set("n", "<leader>dpr", function() dap_python.test_method() end, { desc = "Debug python test" })
+            vim.keymap.set("n", "<leader>bpr", function() dap_python.test_method() end, { desc = "Debug python test" })
         end
     },
     {
@@ -53,19 +53,19 @@ return {
         "mfussenegger/nvim-dap",
         config = function()
             local dap = require("dap")
-            vim.keymap.set("n", "<leader>ds", function()
+            vim.keymap.set("n", "<leader>bs", function()
                 local widgets = require("dap.ui.widgets")
                 local sidebar = widgets.scopes(widgets.scopes())
                 sidebar.open()
             end, { desc = "Open debug sidebar" })
-            vim.keymap.set("n", "<leader>db", function() dap.toggle_breakpoint() end)
-            vim.keymap.set("n", "<leader>dc", function() dap.continue() end)
-            vim.keymap.set("n", "<leader>dd", function() dap.step_back() end)
-            vim.keymap.set("n", "<leader>di", function() dap.step_into() end)
-            vim.keymap.set("n", "<leader>do", function() dap.step_out() end)
-            vim.keymap.set("n", "<leader>dp", function() dap.step_over() end)
-            vim.keymap.set("n", "<leader>dq", function() dap.close() end)
-            vim.keymap.set("n", "<leader>dr", function() dap.repl.toggle() end)
+            vim.keymap.set("n", "<leader>bb", function() dap.toggle_breakpoint() end)
+            vim.keymap.set("n", "<leader>bc", function() dap.continue() end)
+            vim.keymap.set("n", "<leader>bd", function() dap.step_back() end)
+            vim.keymap.set("n", "<leader>bi", function() dap.step_into() end)
+            vim.keymap.set("n", "<leader>bo", function() dap.step_out() end)
+            vim.keymap.set("n", "<leader>bp", function() dap.step_over() end)
+            vim.keymap.set("n", "<leader>bq", function() dap.close() end)
+            vim.keymap.set("n", "<leader>br", function() dap.repl.toggle() end)
 
             -- CodeLLDB config
             dap.adapters.codelldb = {

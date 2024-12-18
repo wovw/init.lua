@@ -49,26 +49,50 @@ return {
 			)
 
 			local nvim_lsp = require("lspconfig")
+
 			-- manual setup to work with NixOS
 			nvim_lsp.lua_ls.setup({
-				cmd = { "lua-language-server" },
 				capabilities = capabilities,
 				settings = {
-					Lua = {
-						runtime = { version = "Lua 5.1" },
-						diagnostics = {
-							globals = { "bit", "vim", "it", "describe", "before_each", "after_each" },
-						},
-					},
+					Lua = {},
 				},
+				on_init = function(client)
+					if client.workspace_folders then
+						local path = client.workspace_folders[1].name
+
+						---@diagnostic disable-next-line: undefined-field
+						if vim.loop.fs_stat(path .. '/.luarc.json') or vim.loop.fs_stat(path .. '/.luarc.jsonc') then
+							return
+						end
+					end
+
+					client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+						runtime = {
+							version = 'Lua 5.1'
+						},
+						-- Make the server aware of Neovim runtime files
+						workspace = {
+							checkThirdParty = false,
+							library = {
+								vim.env.VIMRUNTIME
+								-- Depending on the usage, you might want to add additional paths here.
+								-- "${3rd}/luv/library"
+								-- "${3rd}/busted/library",
+							}
+							-- or pull in all of 'runtimepath'. NOTE: this is a lot slower and will cause issues when working on your own configuration (see https://github.com/neovim/nvim-lspconfig/issues/3189)
+							-- library = vim.api.nvim_get_runtime_file("", true)
+						}
+					})
+				end,
 			})
 			nvim_lsp.clangd.setup({
 				capabilities = capabilities,
 			})
 
+
 			require("fidget").setup({})
 			require("mason").setup()
-			require("mason-tool-installer").setup({
+			require("mason-tool-installer").setup({ -- used with conform.nvim
 				ensure_installed = {
 					"eslint_d",
 					"prettierd",
@@ -89,6 +113,7 @@ return {
 					"tailwindcss",
 					"prismals",
 					"marksman",
+					"zls",
 				},
 				automatic_installation = true,
 				handlers = {
@@ -197,18 +222,6 @@ return {
 				}),
 			})
 
-			vim.diagnostic.config({
-				-- update_in_insert = true,
-				float = {
-					focusable = false,
-					style = "minimal",
-					border = "rounded",
-					source = "always",
-					header = "",
-					prefix = "",
-				},
-			})
-
 			vim.keymap.set("n", "gd", vim.lsp.buf.definition)
 			vim.keymap.set("n", "gI", vim.lsp.buf.implementation) -- Useful when language has ways of declaring types without an actual implementation.
 			vim.keymap.set("n", "gD", vim.lsp.buf.declaration)
@@ -218,6 +231,16 @@ return {
 			vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references)
 			vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename)
 
+			vim.diagnostic.config({
+				float = {
+					focusable = true,
+					style = "minimal",
+					border = "rounded",
+					header = "",
+					prefix = "",
+					scope = "line",
+				},
+			})
 			vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float)
 			vim.keymap.set("n", "[d", vim.diagnostic.goto_next)
 			vim.keymap.set("n", "]d", vim.diagnostic.goto_prev)

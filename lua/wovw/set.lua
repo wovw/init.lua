@@ -31,14 +31,7 @@ vim.opt.linebreak = true
 vim.opt.textwidth = 80
 vim.opt.breakindent = true         -- Preserve indentation in wrapped lines
 vim.opt.breakindentopt = "shift:2" -- Shift wrapped lines
-vim.opt.formatoptions = {
-	["t"] = true,                  -- Auto-wrap text using textwidth
-	["c"] = true,                  -- Auto-wrap comments using textwidth
-	["q"] = true,                  -- Allow formatting of comments with "gq"
-	["j"] = true,                  -- Remove comment leader when joining lines
-	["n"] = true,                  -- Recognize numbered lists
-	["1"] = true,                  -- Don't break a line after a one-letter word
-}
+vim.opt.formatoptions = "tcqjn1"
 
 vim.opt.splitright = true
 vim.opt.splitbelow = true
