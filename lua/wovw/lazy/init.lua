@@ -3,15 +3,17 @@ return {
         "nvim-lua/plenary.nvim",
         name = "plenary"
     },
-    {
-        "christoomey/vim-tmux-navigator",
-        lazy = false
-    },
-    'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+    'tpope/vim-sleuth',
     {
         "supermaven-inc/supermaven-nvim",
         config = function()
-            require("supermaven-nvim").setup({})
+            require("supermaven-nvim").setup({
+                keymaps = {
+                    accept_suggestion = "<C-y>",
+                    clear_suggestion = "<C-]>",
+                    accept_word = "<C-h>",
+                },
+            })
         end,
     },
     { 'wakatime/vim-wakatime', lazy = false },

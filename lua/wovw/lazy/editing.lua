@@ -1,5 +1,39 @@
 return {
     {
+        "L3MON4D3/LuaSnip",
+        version = "v2.*",
+        build = "make install_jsregexp",
+        dependencies = {
+            "rafamadriz/friendly-snippets",
+        },
+        config = function()
+            local ls = require("luasnip")
+            ls.config.set_config({
+                history = true,
+                updateevents = "TextChanged,TextChangedI",
+            })
+            require("luasnip.loaders.from_vscode").lazy_load()
+
+            local count = 0
+            vim.keymap.set({ "i", "s" }, "<C-k>", function()
+                if ls.expand_or_jumpable() then
+                    ls.expand_or_jump()
+                end
+                count = count + 1
+            end, { silent = true })
+            vim.keymap.set({ "i", "s" }, "<C-j>", function()
+                if ls.jumpable(-1) then
+                    ls.jump(-1)
+                end
+            end, { silent = true })
+            vim.keymap.set({ "i", "s" }, "<C-l>", function()
+                if ls.choice_active() then
+                    ls.change_choice(1)
+                end
+            end, { silent = true })
+        end
+    },
+    {
         "windwp/nvim-autopairs",
         event = "InsertEnter",
         dependencies = {
@@ -49,7 +83,7 @@ return {
                 tabkey = '<Tab>',             -- key to trigger tabout, set to an empty string to disable
                 backwards_tabkey = '<S-Tab>', -- key to trigger backwards tabout, set to an empty string to disable
                 act_as_tab = true,            -- shift content if tab out is not possible
-                act_as_shift_tab = false,     -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
+                act_as_shift_tab = true,      -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
                 default_tab = '<C-t>',        -- shift default action (only at the beginning of a line, otherwise <TAB> is used)
                 default_shift_tab = '<C-d>',  -- reverse shift default action,
                 enable_backwards = true,      -- well ...
@@ -67,12 +101,7 @@ return {
                 exclude = {} -- tabout will ignore these filetypes
             }
         end,
-        dependencies = { -- These are optional
-            "nvim-treesitter/nvim-treesitter",
-            "L3MON4D3/LuaSnip",
-            "hrsh7th/nvim-cmp"
-        },
-        opt = true,              -- Set this to true if the plugin is optional
+        opt = false,             -- Set this to true if the plugin is optional
         event = 'InsertCharPre', -- Set the event to 'InsertCharPre' for better compatibility
         priority = 1000,
     },
