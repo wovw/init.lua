@@ -1,7 +1,7 @@
 return {
     {
         'MeanderingProgrammer/render-markdown.nvim',
-        dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons', 'hrsh7th/nvim-cmp' },
+        dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons', 'hrsh7th/nvim-cmp' },
         config = function()
             require("render-markdown").setup({})
             local cmp = require('cmp')

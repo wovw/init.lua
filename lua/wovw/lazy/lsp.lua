@@ -88,7 +88,25 @@ return {
 			nvim_lsp.clangd.setup({
 				capabilities = capabilities,
 			})
-
+			nvim_lsp.nil_ls.setup({
+				capabilities = capabilities,
+				settings = {
+					["nil"] = {
+						formatting = {
+							command = { "nixfmt" },
+						},
+					},
+					-- https://github.com/oxalica/nil/issues/131
+					nix = {
+						flake = {
+							-- calls `nix flake archive` to put a flake and its output to store
+							autoArchive = true,
+							-- auto eval flake inputs for improved completion
+							autoEvalInputs = true,
+						},
+					},
+				},
+			})
 
 			require("fidget").setup({})
 			require("mason").setup()
@@ -107,7 +125,6 @@ return {
 				ensure_installed = {
 					"ruff",
 					"gopls",
-					"nil_ls",
 					"ts_ls",
 					"eslint",
 					"tailwindcss",
@@ -135,18 +152,6 @@ return {
 						})
 						vim.g.zig_fmt_parse_errors = 0
 						vim.g.zig_fmt_autosave = 0
-					end,
-					nil_ls = function()
-						nvim_lsp.nil_ls.setup({
-							capabilities = capabilities,
-							settings = {
-								["nil"] = {
-									formatting = {
-										command = { "nixfmt" },
-									},
-								},
-							},
-						})
 					end,
 					ts_ls = function()
 						nvim_lsp.ts_ls.setup({
@@ -223,9 +228,9 @@ return {
 				}),
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp" },
-					{ name = "buffer" },
-					{ name = "crates" },
 					{ name = "luasnip" },
+					{ name = "crates" },
+					{ name = "buffer" },
 				}),
 			})
 

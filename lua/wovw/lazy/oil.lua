@@ -1,6 +1,6 @@
 return {
     'stevearc/oil.nvim',
-    dependencies = { "nvim-tree/nvim-web-devicons" },
+    dependencies = { "echasnovski/mini.icons", opts = {} },
     config = function()
         require("oil").setup({
             keymaps = {
@@ -15,6 +15,6 @@ return {
             }
         })
 
-        vim.keymap.set("n", "<leader>pv", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+        vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
     end,
 }
