@@ -16,13 +16,6 @@ return {
             })
         end,
     },
-    {
-        "m4xshen/hardtime.nvim",
-        dependencies = { "MunifTanjim/nui.nvim" },
-        opts = {
-            disabled_filetypes = { "qf", "netrw", "NvimTree", "lazy", "mason", "oil" },
-        }
-    },
     { 'wakatime/vim-wakatime', lazy = false },
     "eandrju/cellular-automaton.nvim",
 }
