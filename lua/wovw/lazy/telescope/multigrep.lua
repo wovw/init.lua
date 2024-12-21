@@ -16,7 +16,7 @@ local live_multigrep = function()
                 return nil
             end
 
-            local pieces = vim.split(prompt, "  ")
+            local pieces = vim.split(prompt, "  ") -- path query after two spaces
             local args = { "rg" }
             if pieces[1] then
                 table.insert(args, "-e")
@@ -28,10 +28,10 @@ local live_multigrep = function()
                 table.insert(args, pieces[2])
             end
 
-            return vim.tbl_flatten({
+            return vim.iter({
                 args,
                 { "--color=never", "--no-heading", "--with-filename", "--line-number", "--column", "--smart-case" },
-            })
+            }):flatten():totable()
         end,
         entry_maker = make_entry.gen_from_vimgrep(opts),
         cwd = opts.cwd,
