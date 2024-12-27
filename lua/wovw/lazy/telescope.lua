@@ -3,7 +3,6 @@ return {
     tag = "0.1.5",
     dependencies = {
         "nvim-lua/plenary.nvim",
-        { 'nvim-tree/nvim-web-devicons',              enabled = vim.g.have_nerd_font },
         { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' }
     },
     config = function()
@@ -33,7 +32,7 @@ return {
         end)
         vim.keymap.set('n', '<leader>ps', builtin.live_grep, {})
         vim.keymap.set('n', '<leader>vh', builtin.help_tags, {})
-        vim.keymap.set('n', '<leader>pk', builtin.keymaps, {})
+        vim.keymap.set('n', '<leader>vk', builtin.keymaps, {})
 
         require('wovw.lazy.telescope.multigrep').setup()
     end

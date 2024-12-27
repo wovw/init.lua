@@ -16,9 +16,17 @@ return {
 			"neovim/nvim-lspconfig",
 		},
 		config = function()
+			vim.g.rustaceanvim = {
+				tools = {
+					float_win_config = {
+						border = "rounded",
+						style = "minimal",
+					},
+				},
+			}
 			local bufnr = vim.api.nvim_get_current_buf()
 			vim.keymap.set("n", "K", function() vim.cmd.RustLsp({ 'hover', 'actions' }) end,
-				{ silent = true, buffer = bufnr })
+				{ silent = true, buffer = bufnr, })
 		end
 	},
 	{
@@ -217,14 +225,14 @@ return {
 						require 'luasnip'.lsp_expand(args.body)
 					end
 				},
-				mapping = cmp.mapping.preset.insert({
+				mapping = {
 					["<C-b>"] = cmp.mapping.scroll_docs(-4),
 					["<C-f>"] = cmp.mapping.scroll_docs(4),
 					["<C-p>"] = cmp.mapping.select_prev_item(cmp_select),
 					["<C-n>"] = cmp.mapping.select_next_item(cmp_select),
 					["<C-y>"] = cmp.mapping.confirm({ select = true }),
 					["<C-Space>"] = cmp.mapping.complete(),
-				}),
+				},
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp" },
 					{ name = "luasnip" },
