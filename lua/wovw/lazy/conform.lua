@@ -40,11 +40,15 @@ return {
 				json = { "prettierd" },
 				html = { "prettierd" },
 				css = { "prettierd" },
+
 				python = { "ruff" },
 				go = { "gofumpt", "goimports-reviser", "golines" },
 				rust = { "rustfmt" },
+
 				cpp = { "clang-format" },
 				c = { "clang-format" },
+				h = { "clang-format" },
+				hpp = { "clang-format" },
 
 				["_"] = { "trim_whitespace" },
 			},

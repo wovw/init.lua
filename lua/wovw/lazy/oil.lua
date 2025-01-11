@@ -7,7 +7,7 @@ return {
                 ["<C-h>"] = false,
                 ["<C-l>"] = false,
                 ["<M-h>"] = { "actions.select", opts = { horizontal = true }, desc = "Open the entry in a horizontal split" },
-                ["<M-l>"] = "actions.refresh",
+                ["<M-r>"] = "actions.refresh",
                 ["<C-p>"] = false
             },
             view_options = {

@@ -1,5 +1,8 @@
 return {
     'saecki/crates.nvim',
+    dependencies = {
+        'nvim-lua/plenary.nvim',
+    },
     tag = 'stable',
     event = { "BufRead Cargo.toml" },
     config = function()
