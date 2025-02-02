@@ -7,28 +7,30 @@ return {
             "rafamadriz/friendly-snippets",
         },
         config = function()
-            local ls = require("luasnip")
-            ls.config.set_config({
+            local luasnip = require("luasnip")
+            luasnip.config.set_config({
                 history = true,
                 updateevents = "TextChanged,TextChangedI",
             })
             require("luasnip.loaders.from_vscode").lazy_load()
+            luasnip.filetype_extend("quarto", { "markdown" })
+            luasnip.filetype_extend("rmarkdown", { "markdown" })
 
             local count = 0
             vim.keymap.set({ "i", "s" }, "<C-k>", function()
-                if ls.expand_or_jumpable() then
-                    ls.expand_or_jump()
+                if luasnip.expand_or_jumpable() then
+                    luasnip.expand_or_jump()
                 end
                 count = count + 1
             end, { silent = true })
             vim.keymap.set({ "i", "s" }, "<C-j>", function()
-                if ls.jumpable(-1) then
-                    ls.jump(-1)
+                if luasnip.jumpable(-1) then
+                    luasnip.jump(-1)
                 end
             end, { silent = true })
             vim.keymap.set({ "i", "s" }, "<C-l>", function()
-                if ls.choice_active() then
-                    ls.change_choice(1)
+                if luasnip.choice_active() then
+                    luasnip.change_choice(1)
                 end
             end, { silent = true })
         end

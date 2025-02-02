@@ -40,7 +40,7 @@
   "otter.nvim": { "branch": "main", "commit": "3ff6c154d55528fbde475b2a722f91389421e873" },
   "plenary": { "branch": "master", "commit": "3707cdb1e43f5cea73afb6037e6494e7ce847a66" },
   "plenary.nvim": { "branch": "master", "commit": "3707cdb1e43f5cea73afb6037e6494e7ce847a66" },
-  "quarto-nvim": { "branch": "main", "commit": "1cb2d24d7793241bd43f38e3a6f99a6d11f84458" },
+  "quarto-nvim": { "branch": "main", "commit": "bb710f433ea6b0acaeb672d26f6641bd5723e0ef" },
   "rainbow-delimiters.nvim": { "branch": "master", "commit": "cf0da2516b0684596b09c51dbc93c609cdc2f455" },
   "render-markdown.nvim": { "branch": "main", "commit": "1ba6fb7998985736ca3480366c9792be05b93ad7" },
   "rustaceanvim": { "branch": "master", "commit": "242e47bc356818b956e685a2e8de1d613caf45bf" },
