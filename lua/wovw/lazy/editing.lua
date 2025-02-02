@@ -12,7 +12,6 @@ return {
                 history = true,
                 updateevents = "TextChanged,TextChangedI",
             })
-            require("luasnip.loaders.from_vscode").lazy_load()
             luasnip.filetype_extend("quarto", { "markdown" })
             luasnip.filetype_extend("rmarkdown", { "markdown" })
 

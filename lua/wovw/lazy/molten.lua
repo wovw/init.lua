@@ -117,7 +117,7 @@ return {
 
             -- Undo those config changes when we go back to a markdown or quarto file
             vim.api.nvim_create_autocmd("BufEnter", {
-                pattern = { "*.qmd", "*.md", "*.ipynb" },
+                pattern = { "*.qmd", "*.md" },
                 callback = function(e)
                     if string.match(e.file, ".otter.") then
                         return

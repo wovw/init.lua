@@ -10,7 +10,7 @@ return {
         crates.setup({
             completion = {
                 cmp = {
-                    enable = true,
+                    enabled = true,
                 }
             }
         })
