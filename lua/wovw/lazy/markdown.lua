@@ -14,24 +14,17 @@ return {
         build = function() vim.fn["mkdp#util#install"]() end,
     },
     {
+        -- TODO: fix completions
         -- for lsp features in code cells / embedded code
         'jmbuhr/otter.nvim',
+        dev = false,
         dependencies = {
             {
                 'neovim/nvim-lspconfig',
                 'nvim-treesitter/nvim-treesitter',
             },
         },
-        config = function()
-            require('otter').setup({
-                verbose = {
-                    no_code_found = false,
-                },
-                buffer = {
-                    set_filetype = true,
-                }
-            })
-        end,
+        opts = {}
     },
     {
         "quarto-dev/quarto-nvim",
