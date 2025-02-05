@@ -31,8 +31,8 @@ return {
             end,
         })
 
-        vim.keymap.set("n", "<leader>gd", ":Gdiffsplit<CR>")
-        vim.keymap.set("n", "gr", "<cmd>diffget //2<CR>")
-        vim.keymap.set("n", "gu", "<cmd>diffget //3<CR>")
+        vim.keymap.set("n", "<leader>gd", ":Gvdiffsplit!<CR>")
+        vim.keymap.set("n", "gl", "<cmd>diffget //2<CR>")
+        vim.keymap.set("n", "gr", "<cmd>diffget //3<CR>")
     end
 }

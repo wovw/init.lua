@@ -24,7 +24,12 @@ return {
                 'nvim-treesitter/nvim-treesitter',
             },
         },
-        opts = {}
+        opts = {
+            buffers = { write_to_disk = true, set_filetype = true },
+            verbose = {       -- set to false to disable all verbose messages
+                no_code_found = true, -- warn if otter.activate is called, but no injected code was found
+            },
+        }
     },
     {
         "quarto-dev/quarto-nvim",
