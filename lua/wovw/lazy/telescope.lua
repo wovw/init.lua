@@ -38,7 +38,7 @@ return {
         vim.keymap.set('n', '<leader>pf', function()
             builtin.find_files({ hidden = true })
         end, {})
-        vim.keymap.set('n', '<C-p>', builtin.git_files, {})
+        vim.keymap.set('n', '<leader>pg', builtin.git_files, {})
         vim.keymap.set('n', '<leader>pws', function()
             local word = vim.fn.expand("<cword>")
             builtin.grep_string({ search = word })
