@@ -49,7 +49,8 @@ return {
                     javascript = { 'template_string' },
                     java = false,       -- don't check treesitter on java
                 },
-                enable_check_bracket_line = false
+                enable_check_bracket_line = false,
+                fast_wrap = {},
             })
 
             local cmp_autopairs = require("nvim-autopairs.completion.cmp")

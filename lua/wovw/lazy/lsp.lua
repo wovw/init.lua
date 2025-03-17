@@ -244,8 +244,8 @@ return {
 			vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references)
 			vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename)
 			vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float)
-			vim.keymap.set("n", "[d", vim.diagnostic.goto_next)
-			vim.keymap.set("n", "]d", vim.diagnostic.goto_prev)
+			vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
+			vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
 		end,
 	},
 }

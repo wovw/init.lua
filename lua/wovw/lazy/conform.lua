@@ -56,21 +56,6 @@ return {
 				eslint_d = {
 					-- Enable autofix by default
 					prepend_args = { "--fix" },
-					-- Ensure eslint_d uses local config
-					cwd = require("conform.util").root_file({
-						".eslintrc",
-						".eslintrc.js",
-						".eslintrc.json",
-					}),
-				},
-				prettierd = {
-					-- Ensure prettierd uses local config
-					cwd = require("conform.util").root_file({
-						".prettierrc",
-						".prettierrc.js",
-						".prettierrc.json",
-						"prettier.config.js",
-					}),
 				},
 			},
 		})
