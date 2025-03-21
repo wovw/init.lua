@@ -17,5 +17,24 @@ return {
         'MeanderingProgrammer/render-markdown.nvim',
         'saecki/crates.nvim',
         'jmbuhr/otter.nvim',
+        "p00f/clangd_extensions.nvim",
+        { "roobert/tailwindcss-colorizer-cmp.nvim", opts = {} },
     },
+    opts = function(_, opts)
+        opts.sorting = opts.sorting or {}
+        opts.sorting.comparators = opts.sorting.comparators or {}
+        table.insert(opts.sorting.comparators, 1, require("clangd_extensions.cmp_scores"))
+
+        -- https://www.lazyvim.org/extras/lang/python#nvim-cmp-optional
+        opts.auto_brackets = opts.auto_brackets or {}
+        table.insert(opts.auto_brackets, "python")
+
+        -- original LazyVim kind icon formatter (https://www.lazyvim.org/extras/lang/tailwind#nvim-cmp-optional)
+        opts.formatting = opts.formatting or {}
+        local format_kinds = opts.formatting.format
+        opts.formatting.format = function(entry, item)
+            format_kinds(entry, item) -- add icons
+            return require("tailwindcss-colorizer-cmp").formatter(entry, item)
+        end
+    end,
 }

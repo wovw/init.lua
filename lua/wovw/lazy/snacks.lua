@@ -19,6 +19,6 @@ return {
         { "<leader>.", function() Snacks.scratch() end,        desc = "Toggle Scratch Buffer" },
         { "<leader>S", function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
 
-        { "<c-/>",     function() Snacks.terminal() end,       desc = "Toggle Terminal" },
+        { "<C-/>",     function() Snacks.terminal() end,       desc = "Toggle Terminal" },
     },
 }

@@ -9,10 +9,19 @@ return {
         local crates = require("crates")
         crates.setup({
             completion = {
+                crates = {
+                    enabled = true,
+                },
                 cmp = {
                     enabled = true,
                 }
-            }
+            },
+            lsp = {
+                enabled = true,
+                actions = true,
+                completion = true,
+                hover = true,
+            },
         })
         crates.show()
     end,

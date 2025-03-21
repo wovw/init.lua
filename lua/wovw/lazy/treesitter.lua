@@ -7,9 +7,9 @@ return {
                 -- A list of parser names, or "all"
                 ensure_installed = {
                     "vimdoc", "javascript", "typescript", "css", "c", "cmake", "cpp",
-                    "diff", "lua", "rust", "go", "gomod", "gosum", "graphql", "json",
+                    "diff", "lua", "rust", "ron", "go", "gomod", "gosum", "gowork", "graphql", "json",
                     "jsdoc", "bash", "prisma", "proto", "nix", "zig", "markdown", "markdown_inline",
-                    "latex"
+                    "latex", "ninja", "rst",
                 },
 
                 -- Install parsers synchronously (only applied to `ensure_installed`)
@@ -99,5 +99,35 @@ return {
                 }
             })
         end
+    },
+    {
+        "p00f/clangd_extensions.nvim",
+        lazy = true,
+        config = function() end,
+        opts = {
+            inlay_hints = {
+                inline = false,
+            },
+            ast = {
+                --These require codicons (https://github.com/microsoft/vscode-codicons)
+                role_icons = {
+                    type = "",
+                    declaration = "",
+                    expression = "",
+                    specifier = "",
+                    statement = "",
+                    ["template argument"] = "",
+                },
+                kind_icons = {
+                    Compound = "",
+                    Recovery = "",
+                    TranslationUnit = "",
+                    PackExpansion = "",
+                    TemplateTypeParm = "",
+                    TemplateTemplateParm = "",
+                    TemplateParamObject = "",
+                },
+            },
+        },
     }
 }

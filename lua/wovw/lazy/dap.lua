@@ -1,16 +1,54 @@
+--[[
+-- https://www.lazyvim.org/extras/dap/core
+-- https://github.com/LazyVim/LazyVim/blob/ec5981dfb1222c3bf246d9bcaa713d5cfa486fbd/lua/lazyvim/plugins/extras/dap/core.lua#L2
+-- ]]
+
+---@param config {type?:string, args?:string[]|fun():string[]?}
+local function get_args(config)
+    local args = type(config.args) == "function" and (config.args() or {}) or config.args or
+        {} --[[@as string[] | string ]]
+    local args_str = type(args) == "table" and table.concat(args, " ") or args --[[@as string]]
+
+    config = vim.deepcopy(config)
+    ---@cast args string[]
+    config.args = function()
+        local new_args = vim.fn.expand(vim.fn.input("Run with args: ", args_str)) --[[@as string]]
+        if config.type and config.type == "java" then
+            ---@diagnostic disable-next-line: return-type-mismatch
+            return new_args
+        end
+        return require("dap.utils").splitstr(new_args)
+    end
+    return config
+end
+
 return {
     {
-        "leoluz/nvim-dap-go",
+        "nvim-neotest/neotest",
+        optional = true,
         dependencies = {
-            "mfussenegger/nvim-dap",
+            "fredrikaverpil/neotest-golang",
+            "leoluz/nvim-dap-go",
+            "nvim-neotest/neotest-python",
+            'mrcjkb/rustaceanvim',
+            "lawrence-laz/neotest-zig",
         },
-        ft = "go",
-        config = function()
-            local dap_go = require("dap-go")
-            dap_go.setup()
-            vim.keymap.set("n", "<leader>bgt", function() dap_go.debug_test() end, { desc = "Debug go test" })
-            vim.keymap.set("n", "<leader>bgl", function() dap_go.debug_last() end, { desc = "Debug last go test" })
-        end
+        opts = {
+            adapters = {
+                ["neotest-golang"] = {
+                    -- Here we can set options for neotest-golang, e.g.
+                    -- go_test_args = { "-v", "-race", "-count=1", "-timeout=60s" },
+                    dap_go_enabled = true, -- requires leoluz/nvim-dap-go
+                },
+                ["neotest-python"] = {
+                    -- Here you can specify the settings for the adapter, i.e.
+                    -- runner = "pytest",
+                    -- python = ".venv/bin/python",
+                },
+                ["rustaceanvim.neotest"] = {},
+                ["neotest-zig"] = {},
+            },
+        },
     },
     {
         "mfussenegger/nvim-dap-python",
@@ -21,95 +59,116 @@ return {
         config = function()
             local dap_python = require("dap-python")
             dap_python.setup("uv")
-            vim.keymap.set("n", "<leader>bpr", function() dap_python.test_method() end, { desc = "Debug python test" })
+            vim.keymap.set("n", "<leader>dpt", function() dap_python.test_method() end, { desc = "Debug python test" })
+            vim.keymap.set("n", "<leader>dpc", function() dap_python.test_class() end, { desc = "Debug python class" })
         end
     },
     {
         "rcarriga/nvim-dap-ui",
-        event = "VeryLazy",
-        dependencies = {
-            "mfussenegger/nvim-dap",
-            "nvim-neotest/nvim-nio"
+        dependencies = { "nvim-neotest/nvim-nio" },
+        -- stylua: ignore
+        keys = {
+            { "<leader>du", function() require("dapui").toggle({}) end, desc = "Dap UI" },
+            { "<leader>de", function() require("dapui").eval() end,     desc = "Eval",  mode = { "n", "v" } },
         },
-        config = function()
+        opts = {},
+        config = function(_, opts)
             local dap = require("dap")
             local dapui = require("dapui")
-            dapui.setup()
-            dap.listeners.before.attach.dapui_config = function()
-                dapui.open()
+            dapui.setup(opts)
+            dap.listeners.after.event_initialized["dapui_config"] = function()
+                dapui.open({})
             end
-            dap.listeners.before.launch.dapui_config = function()
-                dapui.open()
+            dap.listeners.before.event_terminated["dapui_config"] = function()
+                dapui.close({})
             end
-            dap.listeners.before.event_terminated.dapui_config = function()
-                dapui.close()
+            dap.listeners.before.event_exited["dapui_config"] = function()
+                dapui.close({})
             end
-            dap.listeners.before.event_exited.dapui_config = function()
-                dapui.close()
-            end
-
-            vim.keymap.set("n", "<leader>bt", function() dapui.toggle() end, { desc = "Toggle debug UI" })
         end,
     },
     {
         "mfussenegger/nvim-dap",
+        recommended = true,
+        desc = "Debugging support. Requires language specific adapters to be configured. (see lang extras)",
         dependencies = {
+            "neovim/nvim-lspconfig", -- depends on mason to install DAP adapters defined in lsp.lua
+            "jbyuki/one-small-step-for-vimkind",
+            "rcarriga/nvim-dap-ui",
             {
                 "theHamsta/nvim-dap-virtual-text",
-                opts = {
-                    enabled = true,                     -- enable this plugin (the default)
-                    enabled_commands = true,            -- create commands DapVirtualTextEnable, DapVirtualTextDisable, DapVirtualTextToggle, (DapVirtualTextForceRefresh for refreshing when debug adapter did not notify its termination)
-                    highlight_changed_variables = true, -- highlight changed values with NvimDapVirtualTextChanged, else always NvimDapVirtualText
-                    highlight_new_as_changed = false,   -- highlight new variables in the same way as changed variables (if highlight_changed_variables)
-                    show_stop_reason = true,            -- show stop reason when stopped for exceptions
-                    commented = false,                  -- prefix virtual text with comment string
-                    only_first_definition = true,       -- only show virtual text at first definition (if there are multiple)
-                    all_references = false,             -- show virtual text on all all references of the variable (not only definitions)
-                    clear_on_continue = false,          -- clear virtual text on "continue" (might cause flickering when stepping)
-                    --- A callback that determines how a variable is displayed or whether it should be omitted
-                    --- @param variable Variable https://microsoft.github.io/debug-adapter-protocol/specification#Types_Variable
-                    --- @param buf number
-                    --- @param stackframe dap.StackFrame https://microsoft.github.io/debug-adapter-protocol/specification#Types_StackFrame
-                    --- @param node userdata tree-sitter node identified as variable definition of reference (see `:h tsnode`)
-                    --- @param options nvim_dap_virtual_text_options Current options for nvim-dap-virtual-text
-                    --- @return string|nil A text how the virtual text should be displayed or nil, if this variable shouldn't be displayed
-                    display_callback = function(variable, buf, stackframe, node, options)
-                        if options.virt_text_pos == "inline" then
-                            return " = " .. variable.value
-                        else
-                            return variable.name .. " = " .. variable.value
-                        end
-                    end,
-                    -- virt_text_pos = vim.fn.has("nvim-0.10") == 1 and "inline" or "eol",
-                    virt_text_pos = "eol",
-
-                    -- experimental features:
-                    all_frames = false,      -- show virtual text for all stack frames not only current. Only works for debugpy on my machine.
-                    virt_lines = false,      -- show virtual lines instead of virtual text (will flicker!)
-                    virt_text_win_col = nil, -- position the virtual text at a fixed window column (starting from the first text column) ,
-                    -- e.g. 80 to position at column 80, see `:h nvim_buf_set_extmark()`
-                },
+                opts = {},
             },
         },
+        -- stylua: ignore
+        keys = {
+            { "<leader>dB", function() require("dap").set_breakpoint(vim.fn.input('Breakpoint condition: ')) end, desc = "Breakpoint Condition" },
+            { "<leader>db", function() require("dap").toggle_breakpoint() end,                                    desc = "Toggle Breakpoint" },
+            { "<leader>dc", function() require("dap").continue() end,                                             desc = "Run/Continue" },
+            { "<leader>da", function() require("dap").continue({ before = get_args }) end,                        desc = "Run with Args" },
+            { "<leader>dC", function() require("dap").run_to_cursor() end,                                        desc = "Run to Cursor" },
+            { "<leader>dg", function() require("dap").goto_() end,                                                desc = "Go to Line (No Execute)" },
+            { "<leader>di", function() require("dap").step_into() end,                                            desc = "Step Into" },
+            { "<leader>dj", function() require("dap").down() end,                                                 desc = "Down" },
+            { "<leader>dk", function() require("dap").up() end,                                                   desc = "Up" },
+            { "<leader>dl", function() require("dap").run_last() end,                                             desc = "Run Last" },
+            { "<leader>do", function() require("dap").step_out() end,                                             desc = "Step Out" },
+            { "<leader>dO", function() require("dap").step_over() end,                                            desc = "Step Over" },
+            { "<leader>dp", function() require("dap").pause() end,                                                desc = "Pause" },
+            { "<leader>dr", function() require("dap").repl.toggle() end,                                          desc = "Toggle REPL" },
+            { "<leader>ds", function() require("dap").session() end,                                              desc = "Session" },
+            { "<leader>dt", function() require("dap").terminate() end,                                            desc = "Terminate" },
+            { "<leader>dw", function() require("dap.ui.widgets").hover() end,                                     desc = "Widgets" },
+        },
         config = function()
+            vim.api.nvim_set_hl(0, "DapStoppedLine", { default = true, link = "Visual" })
+
+            -- setup dap config by VsCode launch.json file
+            local vscode = require("dap.ext.vscode")
+            local json = require("plenary.json")
+            vscode.json_decode = function(str)
+                return vim.json.decode(json.json_strip_comments(str))
+            end
+
             local dap = require("dap")
-            vim.keymap.set("n", "<leader>bs", function()
-                local widgets = require("dap.ui.widgets")
-                local sidebar = widgets.scopes(widgets.scopes())
-                sidebar.open()
-            end, { desc = "Open debug sidebar" })
-            vim.keymap.set("n", "<leader>bb", function() dap.toggle_breakpoint() end)
-            vim.keymap.set("n", "<leader>bc", function() dap.continue() end)
-            vim.keymap.set("n", "<leader>bd", function() dap.step_back() end)
-            vim.keymap.set("n", "<leader>bi", function() dap.step_into() end)
-            vim.keymap.set("n", "<leader>bo", function() dap.step_out() end)
-            vim.keymap.set("n", "<leader>bp", function() dap.step_over() end)
-            vim.keymap.set("n", "<leader>bq", function() dap.close() end)
-            vim.keymap.set("n", "<leader>br", function() dap.repl.toggle() end)
+
+            -- lua config
+            dap.adapters.nlua = function(callback, conf)
+                local adapter = {
+                    type = "server",
+                    host = conf.host or "127.0.0.1",
+                    port = conf.port or 8086,
+                }
+                if conf.start_neovim then
+                    local dap_run = dap.run
+                    dap.run = function(c)
+                        adapter.port = c.port
+                        adapter.host = c.host
+                    end
+                    require("osv").run_this()
+                    dap.run = dap_run
+                end
+                callback(adapter)
+            end
+            dap.configurations.lua = {
+                {
+                    type = "nlua",
+                    request = "attach",
+                    name = "Run this file",
+                    start_neovim = {},
+                },
+                {
+                    type = "nlua",
+                    request = "attach",
+                    name = "Attach to running Neovim instance (port = 8086)",
+                    port = 8086,
+                },
+            }
 
             -- CodeLLDB config
             dap.adapters.codelldb = {
                 type = 'server',
+                host = "localhost",
                 port = "${port}",
                 executable = {
                     command = vim.fn.stdpath("data") .. '/mason/bin/codelldb',
@@ -118,16 +177,21 @@ return {
             }
             dap.configurations.cpp = {
                 {
-                    name = "Debug file",
                     type = "codelldb",
                     request = "launch",
+                    name = "Debug file",
                     program = function()
                         return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
                     end,
                     cwd = '${workspaceFolder}',
-                    stopOnEntry = false,
-                    console = 'integratedTerminal',
                 },
+                {
+                    type = "codelldb",
+                    request = "attach",
+                    name = "Attach to process",
+                    pid = require("dap.utils").pick_process,
+                    cwd = "${workspaceFolder}",
+                }
             }
             dap.configurations.c = dap.configurations.cpp
         end,

@@ -9,24 +9,92 @@ return {
 		end,
 	},
 	{
+		-- https://github.com/LazyVim/LazyVim/blob/ec5981dfb1222c3bf246d9bcaa713d5cfa486fbd/lua/lazyvim/plugins/extras/lang/rust.lua#L58
 		'mrcjkb/rustaceanvim',
 		version = '^5', -- Recommended
 		lazy = false, -- This plugin is already lazy
+		ft = { "rust" },
 		dependencies = {
 			"neovim/nvim-lspconfig",
 		},
 		config = function()
-			vim.g.rustaceanvim = {
+			local diagnostics = "rust-analyzer"
+			local opts = {
+				server = {
+					default_settings = {
+						-- rust-analyzer language server configuration
+						["rust-analyzer"] = {
+							cargo = {
+								allFeatures = true,
+								loadOutDirsFromCheck = true,
+								buildScripts = {
+									enable = true,
+								},
+							},
+							-- Add clippy lints for Rust if using rust-analyzer
+							checkOnSave = diagnostics == "rust-analyzer",
+							-- Enable diagnostics if using rust-analyzer
+							diagnostics = {
+								enable = diagnostics == "rust-analyzer",
+							},
+							procMacro = {
+								enable = true,
+								ignored = {
+									["async-trait"] = { "async_trait" },
+									["napi-derive"] = { "napi" },
+									["async-recursion"] = { "async_recursion" },
+								},
+							},
+							files = {
+								excludeDirs = {
+									".direnv",
+									".git",
+									".github",
+									".gitlab",
+									"bin",
+									"node_modules",
+									"target",
+									"venv",
+									".venv",
+								},
+							}
+						}
+					}
+				}
+			}
+
+			-- dap config
+			local package_path = require("mason-registry").get_package("codelldb"):get_install_path()
+			local codelldb = package_path .. "/extension/adapter/codelldb"
+			local library_path = package_path .. "/extension/lldb/lib/liblldb.dylib"
+			local uname = io.popen("uname"):read("*l")
+			if uname == "Linux" then
+				library_path = package_path .. "/extension/lldb/lib/liblldb.so"
+			end
+			opts.dap = {
+				adapter = require("rustaceanvim.config").get_codelldb_adapter(codelldb, library_path),
+			}
+
+			-- plugin config
+			vim.g.rustaceanvim = vim.tbl_deep_extend("keep", vim.g.rustaceanvim or {
 				tools = {
 					float_win_config = {
 						border = "rounded",
 						style = "minimal",
 					},
 				},
-			}
+			}, opts or {})
+
+			-- keybinds
 			local bufnr = vim.api.nvim_get_current_buf()
 			vim.keymap.set("n", "K", function() vim.cmd.RustLsp({ 'hover', 'actions' }) end,
 				{ silent = true, buffer = bufnr, })
+			vim.keymap.set("n", "<leader>rca", function()
+				vim.cmd.RustLsp("codeAction")
+			end, { desc = "Code Action", buffer = bufnr })
+			vim.keymap.set("n", "<leader>rd", function()
+				vim.cmd.RustLsp("debuggables")
+			end, { desc = "Rust Debuggables", buffer = bufnr })
 		end
 	},
 	{
@@ -38,20 +106,35 @@ return {
 			"hrsh7th/cmp-nvim-lsp",
 			"j-hui/fidget.nvim",
 			"davidosomething/format-ts-errors.nvim",
+			"p00f/clangd_extensions.nvim",
+		},
+		opts = {
+			setup = {
+				clangd = function(_, opts)
+					local clangd_ext_opts = require("lazy.core.config").plugins["clangd_extensions.nvim"].opts
+					require("clangd_extensions").setup(vim.tbl_deep_extend("force", clangd_ext_opts or {},
+						{ server = opts }))
+					return false
+				end,
+			},
 		},
 
 		config = function()
 			local cmp_lsp = require("cmp_nvim_lsp")
 			local capabilities = vim.tbl_deep_extend(
 				"force",
-				{},
+				{
+					offsetEncoding = { "utf-16" },
+				},
 				vim.lsp.protocol.make_client_capabilities(),
 				cmp_lsp.default_capabilities()
 			)
 
 			local nvim_lsp = require("lspconfig")
 
-			-- manual setup to work with NixOS
+			------ some LSPs need manual setup to work with NixOS ------
+
+			-- lua_ls
 			nvim_lsp.lua_ls.setup({
 				capabilities = capabilities,
 				settings = {
@@ -85,9 +168,43 @@ return {
 					})
 				end,
 			})
+
+			-- clangd (https://www.lazyvim.org/extras/lang/clangd)
 			nvim_lsp.clangd.setup({
+				keys = {
+					{ "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
+				},
+				root_dir = function(fname)
+					return require("lspconfig.util").root_pattern(
+						"Makefile",
+						"configure.ac",
+						"configure.in",
+						"config.h.in",
+						"meson.build",
+						"meson_options.txt",
+						"build.ninja"
+					)(fname) or require("lspconfig.util").root_pattern("compile_commands.json", "compile_flags.txt")(
+						fname
+					) or require("lspconfig.util").find_git_ancestor(fname)
+				end,
 				capabilities = capabilities,
+				cmd = {
+					"clangd",
+					"--background-index",
+					"--clang-tidy",
+					"--header-insertion=iwyu",
+					"--completion-style=detailed",
+					"--function-arg-placeholders",
+					"--fallback-style=llvm",
+				},
+				init_options = {
+					usePlaceholders = true,
+					completeUnimported = true,
+					clangdFileStatus = true,
+				},
 			})
+
+			-- nil_ls
 			nvim_lsp.nil_ls.setup({
 				capabilities = capabilities,
 				settings = {
@@ -107,28 +224,44 @@ return {
 					},
 				},
 			})
+			------ end of manual setup ------
 
 			require("fidget").setup({})
 			require("mason").setup()
-			require("mason-tool-installer").setup({ -- used with conform.nvim
+			require("mason-tool-installer").setup({ -- used with conform.nvim / DAP
 				ensure_installed = {
+					-- js
 					"eslint_d",
 					"prettierd",
+
+					-- markdown
+					"markdownlint-cli2",
+					"markdown-toc",
+
+					-- go
 					"gofumpt",
 					"goimports-reviser",
 					"golines",
-					"codelldb",
+					"gomodifytags",
+					"impl",
 					"delve",
+
+					-- c, cpp, rust
+					"codelldb",
 				},
 			})
 			require("mason-lspconfig").setup({
 				ensure_installed = {
 					"ruff",
-					"gopls",
+					"pyright",
+					"basedpyright",
+
 					"ts_ls",
 					"eslint",
 					"tailwindcss",
 					"prismals",
+
+					"gopls",
 					"marksman",
 					"zls",
 				},
@@ -195,17 +328,74 @@ return {
 						})
 					end,
 					gopls = function()
+						-- https://www.lazyvim.org/extras/lang/go
 						nvim_lsp.gopls.setup({
 							capabilities = capabilities,
 							settings = {
 								gopls = {
-									completeUnimported = true,
-									usePlaceholders = true,
-									analyses = {
-										unusedparams = true,
+									gofumpt = true,
+									codelenses = {
+										gc_details = false,
+										generate = true,
+										regenerate_cgo = true,
+										run_govulncheck = true,
+										test = true,
+										tidy = true,
+										upgrade_dependency = true,
+										vendor = true,
 									},
+									hints = {
+										assignVariableTypes = true,
+										compositeLiteralFields = true,
+										compositeLiteralTypes = true,
+										constantValues = true,
+										functionTypeParameters = true,
+										parameterNames = true,
+										rangeVariableTypes = true,
+									},
+									analyses = {
+										nilness = true,
+										unusedparams = true,
+										unusedwrite = true,
+										useany = true,
+									},
+									usePlaceholders = true,
+									completeUnimported = true,
+									staticcheck = true,
+									directoryFilters = { "-.git", "-.vscode", "-.idea", "-.vscode-test", "-node_modules" },
+									semanticTokens = true,
 								}
-							}
+							},
+							on_attach = function(client, _)
+								-- workaround for gopls not supporting semanticTokensProvider
+								-- https://github.com/golang/go/issues/54531#issuecomment-1464982242
+								if not client.server_capabilities.semanticTokensProvider then
+									local semantic = client.config.capabilities.textDocument.semanticTokens
+									client.server_capabilities.semanticTokensProvider = {
+										full = true,
+										legend = {
+											tokenTypes = semantic.tokenTypes,
+											tokenModifiers = semantic.tokenModifiers,
+										},
+										range = true,
+									}
+								end
+							end
+						})
+					end,
+					ruff = function()
+						nvim_lsp.ruff.setup({
+							capabilities = capabilities,
+							cmd_env = { RUFF_TRACE = "messages" },
+							init_options = {
+								settings = {
+									logLevel = "error",
+								},
+							},
+							on_attach = function(client, _)
+								-- Disable hover in favor of Pyright
+								client.server_capabilities.hoverProvider = false
+							end,
 						})
 					end,
 				},
