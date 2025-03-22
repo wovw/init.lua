@@ -8,6 +8,7 @@ return {
     opts = {
         animate = { enabled = false },
         bigfile = { enabled = true },
+        bufdelete = { enabled = true },
         image = { enabled = true },
         indent = { enabled = true },
         quickfile = { enabled = true },
