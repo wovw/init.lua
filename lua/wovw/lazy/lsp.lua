@@ -107,6 +107,7 @@ return {
 			"j-hui/fidget.nvim",
 			"davidosomething/format-ts-errors.nvim",
 			"p00f/clangd_extensions.nvim",
+			"folke/neoconf.nvim",
 		},
 		opts = {
 			setup = {
@@ -129,6 +130,8 @@ return {
 				vim.lsp.protocol.make_client_capabilities(),
 				cmp_lsp.default_capabilities()
 			)
+
+			require("neoconf").setup({})
 
 			local nvim_lsp = require("lspconfig")
 

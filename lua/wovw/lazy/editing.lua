@@ -12,8 +12,6 @@ return {
                 history = true,
                 updateevents = "TextChanged,TextChangedI",
             })
-            luasnip.filetype_extend("quarto", { "markdown" })
-            luasnip.filetype_extend("rmarkdown", { "markdown" })
 
             local count = 0
             vim.keymap.set({ "i", "s" }, "<C-k>", function()

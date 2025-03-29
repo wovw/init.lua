@@ -20,20 +20,6 @@ return {
         ft = { "markdown", "norg", "rmd", "org", "codecompanion" },
         config = function(_, opts)
             require("render-markdown").setup(opts)
-            Snacks.toggle({
-                name = "Render Markdown",
-                get = function()
-                    return require("render-markdown.state").enabled
-                end,
-                set = function(enabled)
-                    local m = require("render-markdown")
-                    if enabled then
-                        m.enable()
-                    else
-                        m.disable()
-                    end
-                end,
-            }):map("<leader>um")
         end,
     },
     {
@@ -47,7 +33,7 @@ return {
         end,
         keys = {
             {
-                "<leader>cp",
+                "<leader>mp",
                 ft = "markdown",
                 "<cmd>MarkdownPreviewToggle<cr>",
                 desc = "Markdown Preview",
@@ -70,37 +56,9 @@ return {
         },
         opts = {
             buffers = { write_to_disk = true, set_filetype = true },
-            verbose = {               -- set to false to disable all verbose messages
-                no_code_found = true, -- warn if otter.activate is called, but no injected code was found
+            verbose = {                -- set to false to disable all verbose messages
+                no_code_found = false, -- don't warn if otter.activate is called, but no injected code was found
             },
         }
-    },
-    {
-        "quarto-dev/quarto-nvim",
-        ft = { "quarto", "markdown" },
-        dev = false,
-        dependencies = {
-            "jmbuhr/otter.nvim",
-            "nvim-treesitter/nvim-treesitter",
-            "benlubas/molten-nvim",
-        },
-        config = function()
-            require("quarto").setup({
-                lspFeatures = {
-                    languages = { "python" },
-                    chunks = "all",
-                    diagnostics = {
-                        enabled = true,
-                    },
-                    completion = {
-                        enabled = true,
-                    },
-                },
-                codeRunner = {
-                    enabled = true,
-                    default_method = "molten",
-                }
-            })
-        end
     },
 }
