@@ -1,14 +1,15 @@
 return {
 	"stevearc/conform.nvim",
+	dependencies = { "KingMichaelPark/mason.nvim" },
 	event = { "BufWritePre" },
 	cmd = { "ConformInfo" },
 	keys = {
 		{
 			"<leader>f",
 			function()
-				require("conform").format({ async = true, lsp_format = "fallback" })
+				require("conform").format({ formatters = { "injected" }, timeout_ms = 3000 })
 			end,
-			mode = "",
+			mode = { "n", "v" },
 			desc = "Format buffer",
 		},
 	},
@@ -17,6 +18,9 @@ return {
 			notify_on_error = false,
 			notify_no_formatters = false,
 			default_format_opts = {
+				timeout_ms = 3000,
+				async = false,
+				quiet = false,
 				lsp_format = "fallback",
 			},
 			format_on_save = function(bufnr)
@@ -28,15 +32,15 @@ return {
 					lsp_format_opt = "fallback"
 				end
 				return {
-					timeout_ms = 500,
+					timeout_ms = 3000,
 					lsp_format = lsp_format_opt,
 				}
 			end,
 			formatters_by_ft = {
-				typescript = { "eslint_d", "prettierd" },
-				javascript = { "eslint_d", "prettierd" },
-				typescriptreact = { "eslint_d", "prettierd" },
-				javascriptreact = { "eslint_d", "prettierd" },
+				typescript = { "prettierd" },
+				javascript = { "prettierd" },
+				typescriptreact = { "prettierd" },
+				javascriptreact = { "prettierd" },
 				json = { "prettierd" },
 				html = { "prettierd" },
 				css = { "prettierd" },
@@ -49,17 +53,16 @@ return {
 				c = { "clang-format" },
 				h = { "clang-format" },
 				hpp = { "clang-format" },
+				cmake = { "cmakelang" },
 
 				["markdown"] = { "prettier", "markdownlint-cli2", "markdown-toc" },
 				["markdown.mdx"] = { "prettier", "markdownlint-cli2", "markdown-toc" },
 
 				["_"] = { "trim_whitespace" },
 			},
+			---@type table<string, conform.FormatterConfigOverride|fun(bufnr: integer): nil|conform.FormatterConfigOverride>
 			formatters = {
-				eslint_d = {
-					-- Enable autofix by default
-					prepend_args = { "--fix" },
-				},
+				injected = { options = { ignore_errors = true } },
 				["markdown-toc"] = {
 					condition = function(_, ctx)
 						for _, line in ipairs(vim.api.nvim_buf_get_lines(ctx.buf, 0, -1, false)) do
@@ -67,6 +70,7 @@ return {
 								return true
 							end
 						end
+						return false
 					end,
 				},
 				["markdownlint-cli2"] = {

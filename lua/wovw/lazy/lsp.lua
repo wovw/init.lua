@@ -238,7 +238,6 @@ return {
 			require("mason-tool-installer").setup({ -- used with conform.nvim / DAP
 				ensure_installed = {
 					-- js
-					"eslint_d",
 					"prettierd",
 
 					-- markdown
@@ -255,6 +254,8 @@ return {
 
 					-- c, cpp, rust
 					"codelldb",
+					"cmakelang",
+					"cmakelint",
 				},
 			})
 			require("mason-lspconfig").setup({
@@ -272,6 +273,7 @@ return {
 					"marksman",
 					"jsonls",
 					"zls",
+					"neocmake",
 				},
 				automatic_installation = true,
 				handlers = {
@@ -336,6 +338,21 @@ return {
 										config
 									)
 								end,
+							},
+						})
+					end,
+					eslint = function()
+						-- https://github.com/LazyVim/LazyVim/blob/ec5981dfb1222c3bf246d9bcaa713d5cfa486fbd/lua/lazyvim/plugins/extras/linting/eslint.lua
+						nvim_lsp.eslint.setup({
+							capabilities = capabilities,
+							settings = {
+								eslint = {
+									-- helps eslint find the eslintrc when it's placed in a subfolder instead of the cwd root
+									workingDirectories = {
+										mode = "auto",
+									},
+									format = true,
+								},
 							},
 						})
 					end,
