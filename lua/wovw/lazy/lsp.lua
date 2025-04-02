@@ -1,5 +1,16 @@
 return {
 	{
+		"folke/lazydev.nvim",
+		ft = "lua", -- only load on lua files
+		opts = {
+			library = {
+				-- See the configuration section for more details
+				-- Load luvit types when the `vim.uv` word is found
+				{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
+			},
+		},
+	},
+	{
 		"davidosomething/format-ts-errors.nvim",
 		config = function()
 			require("format-ts-errors").setup({
@@ -112,8 +123,10 @@ return {
 		opts = {
 			setup = {
 				clangd = function(_, opts)
-					local clangd_ext_opts = require("lazy.core.config").plugins["clangd_extensions.nvim"].opts
-					require("clangd_extensions").setup(vim.tbl_deep_extend("force", clangd_ext_opts or {},
+					local clangd_ext_opts = require("lazy.core.config").plugins
+						["clangd_extensions.nvim"].opts
+					require("clangd_extensions").setup(vim.tbl_deep_extend("force",
+						clangd_ext_opts or {},
 						{ server = opts }))
 					return false
 				end,
@@ -152,23 +165,12 @@ return {
 						end
 					end
 
-					client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
-						runtime = {
-							version = 'Lua 5.1'
-						},
-						-- Make the server aware of Neovim runtime files
-						workspace = {
-							checkThirdParty = false,
-							library = {
-								vim.env.VIMRUNTIME,
-								-- Depending on the usage, you might want to add additional paths here.
-								"${3rd}/luv/library"
-								-- "${3rd}/busted/library",
-							}
-							-- or pull in all of 'runtimepath'. NOTE: this is a lot slower and will cause issues when working on your own configuration (see https://github.com/neovim/nvim-lspconfig/issues/3189)
-							-- library = vim.api.nvim_get_runtime_file("", true)
-						}
-					})
+					client.config.settings.Lua = vim.tbl_deep_extend('force',
+						client.config.settings.Lua, {
+							runtime = {
+								version = 'Lua 5.1'
+							},
+						})
 				end,
 			})
 
@@ -179,16 +181,18 @@ return {
 				},
 				root_dir = function(fname)
 					return require("lspconfig.util").root_pattern(
-						"Makefile",
-						"configure.ac",
-						"configure.in",
-						"config.h.in",
-						"meson.build",
-						"meson_options.txt",
-						"build.ninja"
-					)(fname) or require("lspconfig.util").root_pattern("compile_commands.json", "compile_flags.txt")(
-						fname
-					) or require("lspconfig.util").find_git_ancestor(fname)
+							"Makefile",
+							"configure.ac",
+							"configure.in",
+							"config.h.in",
+							"meson.build",
+							"meson_options.txt",
+							"build.ninja"
+						)(fname) or
+						require("lspconfig.util").root_pattern("compile_commands.json",
+							"compile_flags.txt")(
+							fname
+						) or require("lspconfig.util").find_git_ancestor(fname)
 				end,
 				capabilities = capabilities,
 				cmd = {
@@ -266,6 +270,7 @@ return {
 
 					"gopls",
 					"marksman",
+					"jsonls",
 					"zls",
 				},
 				automatic_installation = true,
@@ -308,13 +313,17 @@ return {
 									while idx <= #result.diagnostics do
 										local entry = result.diagnostics[idx]
 
-										local formatter = require('format-ts-errors')[entry.code]
-										entry.message = formatter and formatter(entry.message) or entry.message
+										local formatter = require(
+											'format-ts-errors')[entry.code]
+										entry.message = formatter and
+											formatter(entry.message) or entry
+											.message
 
 										-- codes: https://github.com/microsoft/TypeScript/blob/main/src/compiler/diagnosticMessages.json
 										if entry.code == 80001 then
 											-- { message = "File is a CommonJS module; it may be converted to an ES module.", }
-											table.remove(result.diagnostics, idx)
+											table.remove(result.diagnostics,
+												idx)
 										else
 											idx = idx + 1
 										end
@@ -373,12 +382,14 @@ return {
 								-- workaround for gopls not supporting semanticTokensProvider
 								-- https://github.com/golang/go/issues/54531#issuecomment-1464982242
 								if not client.server_capabilities.semanticTokensProvider then
-									local semantic = client.config.capabilities.textDocument.semanticTokens
+									local semantic = client.config.capabilities
+										.textDocument.semanticTokens
 									client.server_capabilities.semanticTokensProvider = {
 										full = true,
 										legend = {
 											tokenTypes = semantic.tokenTypes,
-											tokenModifiers = semantic.tokenModifiers,
+											tokenModifiers = semantic
+												.tokenModifiers,
 										},
 										range = true,
 									}
@@ -398,6 +409,29 @@ return {
 							on_attach = function(client, _)
 								-- Disable hover in favor of Pyright
 								client.server_capabilities.hoverProvider = false
+							end,
+						})
+					end,
+					tailwindcss = function()
+						nvim_lsp.tailwindcss.setup({
+							capabilities = capabilities,
+							root_dir = function(fname)
+								-- https://github.com/neovim/nvim-lspconfig/blob/master/lua/lspconfig/configs/tailwindcss.lua
+								local util = require('lspconfig.util')
+								local root_file = {
+									'tailwind.config.js',
+									'tailwind.config.cjs',
+									'tailwind.config.mjs',
+									'tailwind.config.ts',
+									'postcss.config.js',
+									'postcss.config.cjs',
+									'postcss.config.mjs',
+									'postcss.config.ts',
+								}
+								root_file = util.insert_package_json(root_file, 'tailwindcss', fname)
+
+								return util.root_pattern('.git')(fname) -- added git root for monorepo support
+									or util.root_pattern(unpack(root_file))(fname)
 							end,
 						})
 					end,

@@ -23,7 +23,16 @@ return {
     opts = function(_, opts)
         opts.sorting = opts.sorting or {}
         opts.sorting.comparators = opts.sorting.comparators or {}
+
+        -- clangd completions
         table.insert(opts.sorting.comparators, 1, require("clangd_extensions.cmp_scores"))
+
+        -- lazydev (luals)
+        opts.sources = opts.sources or {}
+        table.insert(opts.sources, {
+            name = "lazydev",
+            group_index = 0, -- set group index to 0 to skip loading LuaLS completions
+        })
 
         -- https://www.lazyvim.org/extras/lang/python#nvim-cmp-optional
         opts.auto_brackets = opts.auto_brackets or {}
