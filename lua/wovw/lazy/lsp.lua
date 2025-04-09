@@ -490,6 +490,15 @@ return {
 			vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float)
 			vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
 			vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
+
+			vim.api.nvim_create_user_command("LspLogClear", function()
+				local lsplogpath = vim.fn.stdpath("state") .. "/lsp.log"
+				print(lsplogpath)
+				if io.close(io.open(lsplogpath, "w+b")) == false then
+					vim.notify("Clearning LSP Log failed.",
+						vim.log.levels.WARN)
+				end
+			end, { nargs = 0 })
 		end,
 	},
 }
