@@ -115,4 +115,13 @@ return {
         event = 'InsertCharPre', -- Set the event to 'InsertCharPre' for better compatibility
         priority = 1000,
     },
+    {
+        "andrewferrier/debugprint.nvim",
+        lazy = false,  -- Required to make line highlighting work before debugprint is first used
+        version = "*", -- Remove if you DON'T want to use the stable version
+        opts = {
+            print_tag = "DEBUG",
+            display_counter = false,
+        }
+    }
 }
