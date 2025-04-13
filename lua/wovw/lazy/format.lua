@@ -55,8 +55,8 @@ return {
 				hpp = { "clang-format" },
 				cmake = { "cmakelang" },
 
-				["markdown"] = { "prettier", "markdownlint-cli2", "markdown-toc" },
-				["markdown.mdx"] = { "prettier", "markdownlint-cli2", "markdown-toc" },
+				["markdown"] = { "prettierd", "markdownlint-cli2", "markdown-toc" },
+				["markdown.mdx"] = { "prettierd", "markdownlint-cli2", "markdown-toc" },
 
 				["_"] = { "trim_whitespace" },
 			},
