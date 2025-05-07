@@ -32,7 +32,6 @@ cmp.setup({
         { name = "nvim_lsp" },
         { name = "luasnip" },
         { name = 'render-markdown' },
-        { name = 'crates' },
         { name = "otter" },
         {
             name = "buffer",

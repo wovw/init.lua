@@ -15,7 +15,6 @@ return {
         "rafamadriz/friendly-snippets",
         "onsails/lspkind.nvim",
         'MeanderingProgrammer/render-markdown.nvim',
-        'saecki/crates.nvim',
         'jmbuhr/otter.nvim',
         "p00f/clangd_extensions.nvim",
         { "roobert/tailwindcss-colorizer-cmp.nvim", opts = {} },

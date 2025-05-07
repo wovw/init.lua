@@ -12,9 +12,6 @@ return {
                 crates = {
                     enabled = true,
                 },
-                cmp = {
-                    enabled = true,
-                }
             },
             lsp = {
                 enabled = true,

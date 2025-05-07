@@ -111,8 +111,8 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
-			{ "KingMichaelPark/mason.nvim", opts = { pip = { use_uv = true } } },
-			"KingMichaelPark/mason-lspconfig.nvim",
+			"mason-org/mason.nvim",
+			"mason-org/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer",
 			"hrsh7th/cmp-nvim-lsp",
 			"j-hui/fidget.nvim",
