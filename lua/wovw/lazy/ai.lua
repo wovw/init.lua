@@ -20,6 +20,20 @@ return {
         "hrsh7th/nvim-cmp",              -- autocompletion for avante commands and mentions
         "echasnovski/mini.icons",        -- for icons
         {
+            "ravitemer/mcphub.nvim",
+            dependencies = {
+                "nvim-lua/plenary.nvim",  -- Required for Job and HTTP requests
+            },
+            -- uncomment the following line to load hub lazily
+            --cmd = "MCPHub",  -- lazy load
+            build = "bundled_build.lua",  -- Use this and set use_bundled_binary = true in opts  (see Advanced configuration)
+            config = function()
+                require("mcphub").setup({
+                    use_bundled_binary = true,
+                })
+            end,
+        }   ,
+        {
             "zbirenbaum/copilot.lua",    -- for providers='copilot'
             cmd = "Copilot",
             event = "InsertEnter",
@@ -51,5 +65,44 @@ return {
             },
             ft = { "markdown", "Avante" },
         },
+        {
+            'nvim-lualine/lualine.nvim',
+            config = function()
+                require('lualine').setup({
+                    sections = {
+                        lualine_x = {
+                            -- Other lualine components in "x" section
+                            {require('mcphub.extensions.lualine')},
+                        },
+                    },
+                })
+            end,
+        }
     },
+    config = function()
+        require("avante").setup({
+            system_prompt = function()
+                local hub = require("mcphub").get_hub_instance()
+                return hub:get_active_servers_prompt()
+            end,
+            custom_tools = function()
+                return {
+                    require("mcphub.extensions.avante").mcp_tool(),
+                }
+            end,
+            disabled_tools = { -- using MCPHub's native Neovim server
+                "list_files",
+                "search_files",
+                "read_file",
+                "create_file",
+                "rename_file",
+                "delete_file",
+                "create_dir",
+                "rename_dir",
+                "delete_dir",
+                "bash",
+            },
+        })
+    end,
+
 }
