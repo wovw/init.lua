@@ -6,6 +6,9 @@ return {
         -- add any opts here
         -- for example
         provider = "copilot",
+        behavior = {
+            auto_suggestions = false,
+        }
     },
     -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
     build = "make",
@@ -38,7 +41,9 @@ return {
             cmd = "Copilot",
             event = "InsertEnter",
             config = function()
-                require("copilot").setup({})
+                require("copilot").setup({
+                    copilot_model = "gpt-4o-copilot",
+                })
             end,
         },
         {
