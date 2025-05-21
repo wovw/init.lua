@@ -75,7 +75,7 @@ return {
 			}
 
 			-- dap config
-			local package_path = require("mason-registry").get_package("codelldb"):get_install_path()
+			local package_path = vim.fn.expand("$MASON/packages/codelldb")
 			local codelldb = package_path .. "/extension/adapter/codelldb"
 			local library_path = package_path .. "/extension/lldb/lib/liblldb.dylib"
 			local uname = io.popen("uname"):read("*l")
@@ -119,6 +119,11 @@ return {
 			"davidosomething/format-ts-errors.nvim",
 			"p00f/clangd_extensions.nvim",
 			"folke/neoconf.nvim",
+			{
+				"b0o/SchemaStore.nvim",
+				lazy = true,
+				version = false, -- last release is way too old
+			}
 		},
 		opts = {
 			setup = {
@@ -246,6 +251,7 @@ return {
 					"neocmake",
 				},
 				automatic_installation = true,
+				automatic_enable = true,
 				handlers = {
 					function(server_name)
 						nvim_lsp[server_name].setup({
@@ -362,8 +368,7 @@ return {
 								["textDocument/publishDiagnostics"] = function(
 									_,
 									result,
-									ctx,
-									config
+									ctx
 								)
 									if result.diagnostics == nil then
 										return
@@ -393,8 +398,7 @@ return {
 									vim.lsp.diagnostic.on_publish_diagnostics(
 										_,
 										result,
-										ctx,
-										config
+										ctx
 									)
 								end,
 							},
@@ -512,7 +516,7 @@ return {
 						})
 					end,
 					clangd = function()
-						-- clangd (https://www.lazyvim.org/extras/lang/clangd)
+						-- https://www.lazyvim.org/extras/lang/clangd
 						nvim_lsp.clangd.setup({
 							keys = {
 								{ "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
@@ -530,7 +534,7 @@ return {
 									require("lspconfig.util").root_pattern("compile_commands.json",
 										"compile_flags.txt")(
 										fname
-									) or require("lspconfig.util").find_git_ancestor(fname)
+									) or vim.fs.dirname(vim.fs.find('.git', { path = fname, upward = true })[1])
 							end,
 							capabilities = capabilities,
 							cmd = {
@@ -546,6 +550,27 @@ return {
 								usePlaceholders = true,
 								completeUnimported = true,
 								clangdFileStatus = true,
+							},
+						})
+					end,
+					jsonls = function()
+						-- https://www.lazyvim.org/extras/lang/json
+						nvim_lsp.jsonls.setup({
+							capabilities = capabilities,
+							-- lazy-load schemastore when needed
+							on_new_config = function(new_config)
+								new_config.settings.json.schemas = new_config.settings.json.schemas or {}
+								vim.list_extend(new_config.settings.json.schemas, require("schemastore").json.schemas())
+							end,
+							settings = {
+								json = {
+									format = {
+										enable = true,
+									},
+									validate = {
+										enable = true,
+									},
+								},
 							},
 						})
 					end

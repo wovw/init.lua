@@ -7,7 +7,7 @@ return {
                 -- A list of parser names, or "all"
                 ensure_installed = {
                     "vimdoc", "javascript", "typescript", "css", "c", "cmake", "cpp",
-                    "diff", "lua", "rust", "ron", "go", "gomod", "gosum", "gowork", "graphql", "json",
+                    "diff", "lua", "rust", "ron", "go", "gomod", "gosum", "gowork", "graphql", "json", "jsonc",
                     "jsdoc", "bash", "prisma", "proto", "nix", "zig", "markdown", "markdown_inline",
                     "latex", "ninja", "rst",
                 },
