@@ -3,6 +3,7 @@
   "LuaSnip": { "branch": "master", "commit": "458560534a73f7f8d7a11a146c801db00b081df0" },
   "SchemaStore.nvim": { "branch": "main", "commit": "386bdbf18abb6ca103495c5bdbab65e46f3c361d" },
   "avante.nvim": { "branch": "main", "commit": "87c4c6b4937d1884960759aba4a0e42645688f2f" },
+  "better-ts-errors.nvim": { "branch": "main", "commit": "d57a7794b271e1a0010d0328e5d3f18e20f1face" },
   "cellular-automaton.nvim": { "branch": "main", "commit": "1606e9d5d04ff254023c3f3c62842d065708d6d3" },
   "clangd_extensions.nvim": { "branch": "main", "commit": "db28f29be928d18cbfb86fbfb9f83f584f658feb" },
   "cmake-tools.nvim": { "branch": "master", "commit": "309470b132769ee73bd9f130ae05e42a22ff6d5c" },
