@@ -4,8 +4,9 @@ return {
   opts = {
     keymap = {
       preset = "default",
-      ["<Tab>"] = nil,
-      ["<S-Tab>"] = nil,
+      ["<Tab>"] = {},
+      ["<S-Tab>"] = {},
+      ["<C-e>"] = {},
     },
   },
 }
