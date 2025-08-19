@@ -16,8 +16,8 @@ vim.opt.breakindentopt = "shift:2"
 vim.opt.cursorline = false
 vim.opt.scrolloff = 8
 
--- If no prettier config file is found, the formatter will not be used
-vim.g.lazyvim_prettier_needs_config = false
+-- If no prettier config file is found, the formatter will not be used + avoid conflicts with biome
+vim.g.lazyvim_prettier_needs_config = true
 
 -- Set to false to disable auto format
 vim.g.lazyvim_eslint_auto_format = true
