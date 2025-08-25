@@ -28,6 +28,10 @@ return {
             },
           },
         },
+        files = {
+          hidden = true,
+          ignored = true,
+        },
       },
     },
   },
