@@ -7,8 +7,16 @@ return {
     opts = {
       formatters = {
         ["markdownlint-cli2"] = {
-
           args = { "--config", markdownlint_cli2_path, "--fix", "$FILENAME" },
+        },
+        biome = {
+          args = {
+            "check",
+            "--write",
+            "--no-errors-on-unmatched",
+            "--stdin-file-path",
+            "$FILENAME",
+          },
         },
       },
     },
