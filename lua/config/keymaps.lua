@@ -30,3 +30,11 @@ vim.keymap.set("n", "0", "g0")
 
 vim.keymap.set("n", "Q", "<nop>")
 vim.keymap.set("n", "<leader>ts", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
+
+-- void register
+vim.keymap.set({ "n", "v" }, "<leader>d", '"_d', {
+  desc = "Delete to void register",
+})
+vim.keymap.set({ "n", "v" }, "<leader>c", '"_c', {
+  desc = "Change to void register",
+})
