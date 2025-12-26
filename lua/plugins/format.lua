@@ -6,18 +6,16 @@ return {
     "stevearc/conform.nvim",
     opts = {
       formatters = {
+        oxfmt = {},
         ["markdownlint-cli2"] = {
           args = { "--config", markdownlint_cli2_path, "--fix", "$FILENAME" },
         },
-        biome = {
-          args = {
-            "check",
-            "--write",
-            "--no-errors-on-unmatched",
-            "--stdin-file-path",
-            "$FILENAME",
-          },
-        },
+      },
+      formatters_by_ft = {
+        javascript = { "oxfmt" },
+        typescript = { "oxfmt" },
+        javascriptreact = { "oxfmt" },
+        typescriptreact = { "oxfmt" },
       },
     },
   },

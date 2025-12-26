@@ -1,3 +1,20 @@
+local function ts_filter_diagnostics(err, result, ctx)
+  if result and result.diagnostics then
+    -- Code 6196 is "Unused variable" in standard TypeScript (tsserver)
+    local ignored_codes = { [6196] = true }
+    local filtered = {}
+
+    for _, diagnostic in ipairs(result.diagnostics) do
+      -- Filter out only if it's the specific code AND severity is Hint (4)
+      if not (ignored_codes[diagnostic.code] and diagnostic.severity == 4) then
+        table.insert(filtered, diagnostic)
+      end
+    end
+    result.diagnostics = filtered
+  end
+  vim.lsp.diagnostic.on_publish_diagnostics(err, result, ctx)
+end
+
 return {
   "neovim/nvim-lspconfig",
   opts = {
@@ -14,24 +31,10 @@ return {
       },
       vtsls = {
         handlers = {
-          -- Custom handler to filter out specific diagnostic codes
-          ["textDocument/publishDiagnostics"] = function(err, result, ctx)
-            if result and result.diagnostics then
-              local ignored_codes = { [6196] = true } -- Unused variables
-              local filtered = {}
-              for _, diagnostic in ipairs(result.diagnostics) do
-                if not (ignored_codes[diagnostic.code] and diagnostic.severity == 4) then
-                  table.insert(filtered, diagnostic)
-                  -- else
-                  --   print("Ignoring diagnostic: " .. vim.inspect(diagnostic))
-                end
-              end
-              result.diagnostics = filtered
-            end
-            vim.lsp.diagnostic.on_publish_diagnostics(err, result, ctx)
-          end,
+          ["textDocument/publishDiagnostics"] = ts_filter_diagnostics,
         },
       },
+      oxlint = {},
     },
   },
 }

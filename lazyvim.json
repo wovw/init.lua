@@ -3,7 +3,6 @@
     "lazyvim.plugins.extras.coding.mini-surround",
     "lazyvim.plugins.extras.dap.core",
     "lazyvim.plugins.extras.editor.harpoon2",
-    "lazyvim.plugins.extras.formatting.biome",
     "lazyvim.plugins.extras.formatting.prettier",
     "lazyvim.plugins.extras.lang.clangd",
     "lazyvim.plugins.extras.lang.git",
