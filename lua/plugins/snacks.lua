@@ -6,6 +6,7 @@ local exclude = {
   ".turbo",
   "_generated",
   "*lock.yaml",
+  ".context",
 }
 
 return {
@@ -46,6 +47,11 @@ return {
           exclude = exclude,
         },
         grep = {
+          hidden = true,
+          ignored = true,
+          exclude = exclude,
+        },
+        grep_word = {
           hidden = true,
           ignored = true,
           exclude = exclude,

@@ -6,7 +6,7 @@ vim.keymap.set("n", "<C-n>", "<cmd>cnext<CR>zz")
 vim.keymap.set("n", "<C-p>", "<cmd>cprev<CR>zz")
 
 -- line diagnostics
-vim.keymap.del("n", "<leader>cd")
+vim.keymap.del("n", "<leader>cd") -- unmap
 vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float)
 
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
