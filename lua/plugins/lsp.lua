@@ -16,25 +16,39 @@ local function ts_filter_diagnostics(err, result, ctx)
 end
 
 return {
-  "neovim/nvim-lspconfig",
-  opts = {
-    inlay_hints = {
-      enabled = false,
-    },
-    servers = {
-      remark_ls = {
-        settings = {
-          remark = {
-            requireConfig = false,
+  {
+    "neovim/nvim-lspconfig",
+    opts = {
+      inlay_hints = {
+        enabled = false,
+      },
+      servers = {
+        remark_ls = {
+          settings = {
+            remark = {
+              requireConfig = false,
+            },
           },
         },
-      },
-      vtsls = {
-        handlers = {
-          ["textDocument/publishDiagnostics"] = ts_filter_diagnostics,
+        vtsls = {
+          handlers = {
+            ["textDocument/publishDiagnostics"] = ts_filter_diagnostics,
+          },
         },
+        oxlint = {},
       },
-      oxlint = {},
+    },
+  },
+  {
+    "mrcjkb/rustaceanvim",
+    opts = {
+      server = {
+        -- 1. Force the root directory to be the git root (to play nice with vscode settings)
+        root_dir = function(fname)
+          local util = require("lspconfig.util")
+          return util.root_pattern(".git")(fname) or util.root_pattern("Cargo.toml")(fname)
+        end,
+      },
     },
   },
 }
