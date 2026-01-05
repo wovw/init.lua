@@ -18,6 +18,5 @@ vim.opt.scrolloff = 8
 
 vim.g.lazyvim_prettier_needs_config = true
 vim.g.lazyvim_eslint_auto_format = true
-vim.g.lazyvim_rust_diagnostics = "bacon-ls"
 
 vim.g.vscode = false -- see: https://www.lazyvim.org/extras/vscode

@@ -26,7 +26,7 @@ return {
         remark_ls = {
           settings = {
             remark = {
-              requireConfig = false,
+              requireConfig = true,
             },
           },
         },
