@@ -16,7 +16,6 @@ vim.opt.breakindentopt = "shift:2"
 vim.opt.cursorline = false
 vim.opt.scrolloff = 8
 
-vim.g.lazyvim_prettier_needs_config = true
 vim.g.lazyvim_eslint_auto_format = true
 
 vim.g.vscode = false -- see: https://www.lazyvim.org/extras/vscode
