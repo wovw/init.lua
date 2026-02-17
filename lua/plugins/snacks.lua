@@ -1,14 +1,3 @@
-local exclude = {
-  "node_modules",
-  ".git",
-  "target",
-  ".direnv",
-  ".turbo",
-  "_generated",
-  "*lock.yaml",
-  ".context",
-}
-
 return {
   "folke/snacks.nvim",
   opts = {
@@ -43,18 +32,12 @@ return {
         },
         files = {
           hidden = true,
-          ignored = true,
-          exclude = exclude,
         },
         grep = {
           hidden = true,
-          ignored = true,
-          exclude = exclude,
         },
         grep_word = {
           hidden = true,
-          ignored = true,
-          exclude = exclude,
         },
       },
     },
